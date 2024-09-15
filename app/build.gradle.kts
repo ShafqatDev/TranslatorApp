@@ -74,31 +74,24 @@ dependencies {
     val room_version = "2.6.1"
     implementation("androidx.room:room-ktx:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
-    implementation ("androidx.compose.foundation:foundation:1.6.1")
-    implementation ("androidx.compose.foundation:foundation-layout:1.6.1")
-    implementation ("androidx.compose.material:material:1.6.1")
-    implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.3")
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     implementation("com.github.Kaaveh:sdp-compose:1.1.0")
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
-    implementation("androidx.compose.foundation:foundation:1.6.1")
     implementation ("androidx.compose.material:material-icons-extended:1.6.1")
-    // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
-
-    // Coil
-    implementation("io.coil-kt:coil-compose:2.5.0")
-    implementation("com.google.ai.client.generativeai:generativeai:0.2.2")
     val ktorVersion="2.3.9"
     implementation ("io.ktor:ktor-client-core:$ktorVersion")
     implementation ("io.ktor:ktor-client-okhttp:$ktorVersion")
     implementation ("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation ("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation ("io.ktor:ktor-client-logging:$ktorVersion")
-    //noinspection UseTomlInstead
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.video)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.extensions)
+
+    implementation(libs.text.recognition)
 }

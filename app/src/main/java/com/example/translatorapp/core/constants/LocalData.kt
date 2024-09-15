@@ -5,6 +5,19 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.speech.RecognizerIntent
+import android.speech.tts.TextToSpeech
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
+import androidx.camera.core.AspectRatio
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
+import com.example.translatorapp.data.controller.TextRecognitionAnalyzer
+import org.json.JSONArray
+import java.util.Locale
 
 object LocalData {
     fun shareApp(context: Context) {
@@ -38,5 +51,47 @@ object LocalData {
         } catch (_: Exception) {
         }
     }
+    fun speak(tts: TextToSpeech?, text: String) {
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+    }
+    fun startTextRecognition(
+        context: Context,
+        cameraController: LifecycleCameraController,
+        lifecycleOwner: LifecycleOwner,
+        previewView: PreviewView,
+        onDetectedTextUpdated: (String) -> Unit
+    ) {
 
+        cameraController.imageAnalysisTargetSize = CameraController.OutputSize(AspectRatio.RATIO_16_9)
+        cameraController.setImageAnalysisAnalyzer(
+            ContextCompat.getMainExecutor(context),
+            TextRecognitionAnalyzer(onDetectedTextUpdated = onDetectedTextUpdated)
+        )
+
+        cameraController.bindToLifecycle(lifecycleOwner)
+        previewView.controller = cameraController
+    }
+    fun extractFromString(rawText: String): String {
+        val jsonArray = JSONArray(rawText)
+        var textContents = ""
+        val thirdList = jsonArray.getJSONArray(0)
+        for (innerListIndex in 0 until thirdList.length()) {
+            val innerList = thirdList.getJSONArray(innerListIndex)
+            val text = innerList.getString(0)
+            if (textContents.isNotBlank()) {
+                textContents += ""
+            }
+            textContents += text
+        }
+        return textContents
+    }
+
+    fun startSpeechRecognition(startForResult: ManagedActivityResultLauncher<Intent, ActivityResult>) {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak Now")
+        }
+        startForResult.launch(intent)
+    }
 }

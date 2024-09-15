@@ -1,9 +1,11 @@
-package com.example.translatorapp.utils
+package com.example.translatorapp.data.controller
 
 import android.content.Context
 
 
-class SharedPreferences constructor(private val context: Context) {
+class SharedPreferences(
+    private val context: Context
+) {
     private val sharedPref = context.getSharedPreferences("language_prefs", Context.MODE_PRIVATE)
     private val editor = sharedPref.edit()
 

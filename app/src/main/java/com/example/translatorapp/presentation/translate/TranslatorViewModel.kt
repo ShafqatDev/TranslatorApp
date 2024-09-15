@@ -1,10 +1,9 @@
-package com.example.translatorapp.presentation.translator_screen
+package com.example.translatorapp.presentation.translate
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.translatorapp.utils.SharedPreferences
-import com.example.translatorapp.utils.TranslatorHelper
+import com.example.translatorapp.domain.usecase.TranslateTextUseCase
+import com.example.translatorapp.data.controller.SharedPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,8 +19,8 @@ data class TranslatorState(
 )
 
 
-class TranslatorViewModel (
-    private val translatorHelper: TranslatorHelper,
+class TranslatorViewModel(
+    private val translatorTextUseCase: TranslateTextUseCase,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     private val _state = MutableStateFlow(TranslatorState())
@@ -59,13 +58,9 @@ class TranslatorViewModel (
 
     fun getTranslatorText() {
         val fromLanguage = sharedPreferences.getFromLanguage() ?: "en"
-        Log.d("cvv", "fromLanguage:$fromLanguage ")
         val toLanguage = sharedPreferences.getToLanguage() ?: "ur"
-        Log.d("cvv", "toLanguage:$toLanguage ")
-
-
         viewModelScope.launch(Dispatchers.IO) {
-            val response = translatorHelper.getTranslator(
+            val response = translatorTextUseCase.invoke(
                 _state.value.requestText,
                 from = fromLanguage ?: "",
                 to = toLanguage ?: ""
@@ -94,13 +89,6 @@ class TranslatorViewModel (
                     fromLanguage = toLanguage
                 )
             }
-        }
-    }
-    fun hideShowRateUsDialog() {
-        _state.update {
-            it.copy(
-                isRateUsDialogOpen = state.value.isRateUsDialogOpen.not()
-            )
         }
     }
 }

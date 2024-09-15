@@ -1,10 +1,10 @@
-package com.example.translatorapp.presentation.language_screen
+package com.example.translatorapp.presentation.language
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.translatorapp.data.data_source.model.LanguageModel
 import com.example.translatorapp.data.data_source.model.languageList
-import com.example.translatorapp.utils.SharedPreferences
+import com.example.translatorapp.data.controller.SharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -26,14 +26,6 @@ class LanguageViewModel(
         _state.update {
             it.copy(
                 searchField = search
-            )
-        }
-    }
-
-    fun onClearClick() {
-        _state.update {
-            it.copy(
-                searchField = ""
             )
         }
     }

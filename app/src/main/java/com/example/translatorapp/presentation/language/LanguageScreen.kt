@@ -1,4 +1,4 @@
-package com.example.translatorapp.presentation.language_screen
+package com.example.translatorapp.presentation.language
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -10,13 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -27,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.translatorapp.data.data_source.model.LanguageModel
 import com.example.translatorapp.data.data_source.model.languageList
 import com.example.translatorapp.presentation.components.LocalNavController
-import com.example.translatorapp.utils.LanguageTopAppBar
+import com.example.translatorapp.presentation.language.components.LanguageTopAppBar
 
 import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
@@ -42,7 +38,7 @@ fun LanguageScreen(
     val context = LocalContext.current
     val state = viewModel.state.collectAsState().value
     Scaffold(topBar = {
-        LanguageTopAppBar(text = "Language",
+        LanguageTopAppBar(text = "Select Language",
             searchValue = state.searchField,
             enableSearch = true,
             onValueChange = {
