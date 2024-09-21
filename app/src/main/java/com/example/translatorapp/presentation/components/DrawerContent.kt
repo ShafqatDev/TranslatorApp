@@ -34,11 +34,16 @@ import androidx.compose.ui.unit.sp
 import com.example.translatorapp.R
 
 @Composable
-fun DrawerContent() {
+fun DrawerContent(
+    onShareClick: () -> Unit = {},
+    onRateClick: () -> Unit = {},
+    onPrivacyPolicyClick: () -> Unit = {},
+    onFeedbackClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .clip(RoundedCornerShape(10.dp))
+            .fillMaxWidth(0.8f)
+            .clip(RoundedCornerShape(6.dp))
             .fillMaxSize()
             .background(Color.White)
             .padding(16.dp)
@@ -58,25 +63,33 @@ fun DrawerContent() {
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
-        DrawerItem(iconRes = Icons.Default.Share, text = "Share App") {}
+        DrawerItem(iconRes = Icons.Default.Share, text = "Share App") {
+            onShareClick.invoke()
+        }
         Divider(
             color = Color(0xFFB39DDB),
             thickness = 0.5.dp,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-        DrawerItem(iconRes = Icons.Default.StarRate, text = "Rate Us") {}
+        DrawerItem(iconRes = Icons.Default.StarRate, text = "Rate Us") {
+            onRateClick.invoke()
+        }
         Divider(
             color = Color(0xFFB39DDB),
             thickness = 0.5.dp,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-        DrawerItem(iconRes = Icons.Default.PrivacyTip, text = "Privacy Policy") {}
+        DrawerItem(iconRes = Icons.Default.PrivacyTip, text = "Privacy Policy") {
+            onPrivacyPolicyClick.invoke()
+        }
         Divider(
             color = Color(0xFFB39DDB),
             thickness = 0.5.dp,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-        DrawerItem(iconRes = Icons.Default.Feedback, text = "Feedback") {}
+        DrawerItem(iconRes = Icons.Default.Feedback, text = "Feedback") {
+            onFeedbackClick.invoke()
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 

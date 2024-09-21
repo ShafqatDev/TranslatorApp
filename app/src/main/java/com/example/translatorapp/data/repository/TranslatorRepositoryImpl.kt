@@ -10,11 +10,9 @@ class TranslatorRepositoryImpl : TranslatorRepository {
     override suspend fun getTranslator(
         text: String, from: String, to: String
     ): String {
-        val api =
+        val url =
             "https://translate.googleapis.com/translate_a/single?client=gtx&sl=$from&tl=$to&dt=t&q=${text.toEncode()}"
-        val getResponse = NetworkClient.makeNetworkRequest(
-            url = api, requestType = RequestType.Get
-        )
+        val getResponse = NetworkClient.makeNetworkRequest(url = url)
         val response = LocalData.extractFromString(getResponse)
         return response
     }

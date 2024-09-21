@@ -7,11 +7,14 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +31,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.translatorapp.core.ads.MyAdsKeys
+import com.example.translatorapp.core.ads.NativeAd
 import com.example.translatorapp.core.constants.LocalData
 import com.example.translatorapp.core.constants.LocalData.speak
 import com.example.translatorapp.data.data_source.model.getLanguageNameByShortCode
@@ -37,6 +42,7 @@ import com.example.translatorapp.core.constants.LocalData.startSpeechRecognition
 import com.example.translatorapp.presentation.navigation.components.Screens
 import com.example.translatorapp.presentation.translate.components.RequestCard
 import com.example.translatorapp.presentation.translate.components.TranslationResult
+import com.example.translatorapp.ui.theme.MainColor
 import ir.kaaveh.sdpcompose.sdp
 import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
@@ -48,14 +54,17 @@ fun TranslatorScreen() {
     val navController = LocalNavController.current
     val lifecycle = LocalLifecycleOwner.current
     val context = LocalContext.current
+    val activity = context as Activity
     var tts by remember { mutableStateOf<TextToSpeech?>(null) }
+
     LaunchedEffect(context) {
-        tts = TextToSpeech(context, TextToSpeech.OnInitListener { status ->
+        tts = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 tts?.language = Locale.getDefault()
             }
-        })
+        }
     }
+
     DisposableEffect(Unit) {
         onDispose {
             tts?.stop()
@@ -64,7 +73,7 @@ fun TranslatorScreen() {
     }
 
     val startForResult =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK && it.data != null) {
                 val resultCode = it.data
                 val resultArray =
@@ -72,16 +81,18 @@ fun TranslatorScreen() {
                 viewModel.onSpeechToText(resultArray?.get(0).toString())
             }
         }
+
     LaunchedEffect(key1 = lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.updateLanguages()
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFEEF7FE))
             .padding(16.dp)
-            .background(Color.White)
     ) {
         Swap(modifier = Modifier.align(Alignment.CenterHorizontally),
             fromLanguage = state.fromLanguage.getLanguageNameByShortCode(),
@@ -95,32 +106,44 @@ fun TranslatorScreen() {
             onSwapClick = {
                 viewModel.onSwapClick()
             })
-        Spacer(modifier = Modifier.height(16.dp))
-        RequestCard(requestContent = state.requestText, onRequestChange = {
-            viewModel.onTranslatorTextFieldChange(it)
-        }, onListenClick = {
-            speak(tts, state.requestText)
-        }, onMicClick = {
-            startSpeechRecognition(startForResult)
-        }, onTranslateClick = {
-            if (state.requestText.isBlank()) {
-                Toast.makeText(context, "Enter any Word", Toast.LENGTH_SHORT).show()
-            } else {
-                viewModel.getTranslatorText()
+        NativeAd(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            activity = activity,
+            adKey = MyAdsKeys.TestNative.name
+        )
+
+        RequestCard(
+            requestContent = state.requestText,
+            onRequestChange = {
+                viewModel.onTranslatorTextFieldChange(it)
+            },
+            onListenClick = {
+                speak(tts, state.requestText)
+            },
+            onMicClick = {
+                startSpeechRecognition(startForResult)
+            },
+            onTranslateClick = {
+                if (state.requestText.isBlank()) {
+                    Toast.makeText(context, "Enter any Word", Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.getTranslatorText()
+                }
             }
-        })
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TranslationResult(onListenClick = {
-            speak(tts, state.responseText)
-        }, toLanguage = state.toLanguage.getLanguageNameByShortCode(),
+        TranslationResult(
+            onListenClick = {
+                speak(tts, state.responseText)
+            },
+            toLanguage = state.toLanguage.getLanguageNameByShortCode(),
             responseText = state.responseText,
             onShareClick = {
-                LocalData.shareApp(context)
-            },
-            onFavClick = {
-
+                LocalData.shareText(context, state.responseText)
             },
             onCopyClick = {
                 LocalData.copyToClipboard(context, state.responseText)

@@ -32,11 +32,22 @@ object LocalData {
         context.startActivity(Intent.createChooser(shareIntent, "Share via"))
     }
 
+    fun shareText(context: Context, text: String) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(
+                Intent.EXTRA_TEXT, text
+            )
+        }
+        context.startActivity(Intent.createChooser(shareIntent, "Share via"))
+    }
+
     fun copyToClipboard(context: Context, text: String) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("Copied Text", text)
         clipboard.setPrimaryClip(clip)
     }
+
     fun openApp(context: Context, packageName: String) {
         try {
 
@@ -51,9 +62,11 @@ object LocalData {
         } catch (_: Exception) {
         }
     }
+
     fun speak(tts: TextToSpeech?, text: String) {
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
     }
+
     fun startTextRecognition(
         context: Context,
         cameraController: LifecycleCameraController,
@@ -61,8 +74,8 @@ object LocalData {
         previewView: PreviewView,
         onDetectedTextUpdated: (String) -> Unit
     ) {
-
-        cameraController.imageAnalysisTargetSize = CameraController.OutputSize(AspectRatio.RATIO_16_9)
+        cameraController.imageAnalysisTargetSize =
+            CameraController.OutputSize(AspectRatio.RATIO_16_9)
         cameraController.setImageAnalysisAnalyzer(
             ContextCompat.getMainExecutor(context),
             TextRecognitionAnalyzer(onDetectedTextUpdated = onDetectedTextUpdated)
@@ -71,24 +84,29 @@ object LocalData {
         cameraController.bindToLifecycle(lifecycleOwner)
         previewView.controller = cameraController
     }
+
     fun extractFromString(rawText: String): String {
         val jsonArray = JSONArray(rawText)
-        var textContents = ""
+        val stringBuilder = StringBuilder()
         val thirdList = jsonArray.getJSONArray(0)
         for (innerListIndex in 0 until thirdList.length()) {
             val innerList = thirdList.getJSONArray(innerListIndex)
             val text = innerList.getString(0)
-            if (textContents.isNotBlank()) {
-                textContents += ""
-            }
-            textContents += text
+            stringBuilder.append(text)
         }
-        return textContents
+
+        return stringBuilder.toString()
     }
 
-    fun startSpeechRecognition(startForResult: ManagedActivityResultLauncher<Intent, ActivityResult>) {
+
+    fun startSpeechRecognition(
+        startForResult: ManagedActivityResultLauncher<Intent, ActivityResult>,
+        isLeft: (Boolean) -> Unit = {}
+    ) {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
             putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak Now")
         }

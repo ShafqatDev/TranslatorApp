@@ -12,9 +12,6 @@ import kotlinx.coroutines.launch
 
 data class CameraState(
     val detectedText: String = "No text detected yet..",
-    val isTakingPhoto: Boolean = false,
-    val photoTaken: Boolean = false,
-    val errorMessage: String? = null,
     val fromLanguage: String = "en",
     val toLanguage: String = "ur"
 )
@@ -28,12 +25,9 @@ class CameraViewModel(
 
     init {
         updateLanguages()
-        if (state.value.detectedText.isNotBlank()) {
-            getTranslatorText()
-        }
     }
 
-    private fun updateLanguages() {
+    fun updateLanguages() {
         _state.update {
             it.copy(
                 fromLanguage = sharedPreferences.getFromLanguage(),
@@ -49,21 +43,15 @@ class CameraViewModel(
         getTranslatorText()
     }
 
-    fun getTranslatorText() {
+    private fun getTranslatorText() {
         val fromLanguage = sharedPreferences.getFromLanguage()
         val toLanguage = sharedPreferences.getToLanguage()
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = translatorTextUseCase.invoke(
-                    _state.value.detectedText, from = fromLanguage, to = toLanguage
-                )
-                _state.update {
-                    it.copy(detectedText = response)
-                }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(errorMessage = e.message)
-                }
+            val response = translatorTextUseCase.invoke(
+                _state.value.detectedText, from = fromLanguage, to = toLanguage
+            )
+            _state.update {
+                it.copy(detectedText = response)
             }
         }
     }
@@ -76,8 +64,7 @@ class CameraViewModel(
             sharedPreferences.saveToLanguage(fromLanguage)
             _state.update {
                 it.copy(
-                    toLanguage = fromLanguage,
-                    fromLanguage = toLanguage
+                    toLanguage = fromLanguage, fromLanguage = toLanguage
                 )
             }
         }

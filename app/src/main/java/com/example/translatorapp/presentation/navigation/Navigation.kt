@@ -19,7 +19,7 @@ fun Navigation(
         composable(Screens.SplashScreen.name) {
             SplashScreen()
         }
-        composable(Screens.TranslatorScreen.name) {
+        composable(Screens.MainScreen.name) {
             MainScreen()
         }
         composable(Screens.LanguageScreen.name + "/{isFrom}") {

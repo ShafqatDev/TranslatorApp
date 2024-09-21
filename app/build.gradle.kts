@@ -23,11 +23,18 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
+            resValue("string", "appId", "ca-app-pub-3940256099942544~3347511713")
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+        }
+        release {
+            resValue("string", "appId", "")
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -40,6 +47,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -78,13 +86,13 @@ dependencies {
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     implementation("com.github.Kaaveh:sdp-compose:1.1.0")
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
-    implementation ("androidx.compose.material:material-icons-extended:1.6.1")
-    val ktorVersion="2.3.9"
-    implementation ("io.ktor:ktor-client-core:$ktorVersion")
-    implementation ("io.ktor:ktor-client-okhttp:$ktorVersion")
-    implementation ("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation ("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation ("io.ktor:ktor-client-logging:$ktorVersion")
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
+    val ktorVersion = "2.3.9"
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-client-logging:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
@@ -92,6 +100,8 @@ dependencies {
     implementation(libs.androidx.camera.video)
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
-
     implementation(libs.text.recognition)
+
+    //AdsMob
+    implementation("com.github.developwithishfaq:ads-sdk:1.0-beta01")
 }

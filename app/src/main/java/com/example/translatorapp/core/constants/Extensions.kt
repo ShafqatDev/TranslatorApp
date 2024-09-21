@@ -2,4 +2,4 @@ package com.example.translatorapp.core.constants
 
 import java.net.URLEncoder
 
-fun String.toEncode() = URLEncoder.encode(this,"UTF-8")
+fun String.toEncode(): String = URLEncoder.encode(this,"UTF-8")

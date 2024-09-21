@@ -42,8 +42,8 @@ fun RequestCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
-            .background(Color(0xFFF5F5F5))
+            .height(150.dp)
+            .background(Color.White)
             .border(1.dp, Color.Gray, shape = RoundedCornerShape(8.dp)),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -51,14 +51,14 @@ fun RequestCard(
             value = requestContent,
             onValueChange = { onRequestChange.invoke(it) },
             textStyle = TextStyle(
-                fontSize = 22.sp, color = Color.Black
+                fontSize = 12.sp, color = Color.Black
             ),
             placeholder = {
                 Text(text = "Enter text to translate")
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(2f)
                 .padding(5.dp),
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
@@ -70,7 +70,7 @@ fun RequestCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 10.dp),
+                .padding(horizontal = 10.dp, vertical = 2.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

@@ -9,17 +9,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HistoryDao {
     @Upsert
-    suspend fun insertHistory(translator: HistoryEntity)
+    suspend fun insertNote(historyEntity: HistoryEntity)
 
-    @Query("SELECT * FROM HistoryEntity WHERE id = :id")
-    suspend fun getHistoryById(id: Long): HistoryEntity?
+    @Query("UPDATE historyentity SET isFavorite = NOT isFavorite WHERE id = :id")
+    suspend fun toggleFavorite(id: Long)
 
-    @Query("UPDATE HistoryEntity SET isFavorite = :isFavorite WHERE id = :id")
-    suspend fun updateFavoriteStatus(id: Long, isFavorite: Boolean)
-
-    @Query("DELETE FROM HistoryEntity WHERE id = :id")
-    suspend fun deleteHistory(id: Long)
-
-    @Query("SELECT * FROM HistoryEntity")
-    fun getAllHistory(): Flow<List<HistoryEntity>>
+    @Query("SELECT * FROM historyentity")
+    fun getNotes(): Flow<List<HistoryEntity>>
 }

@@ -7,6 +7,6 @@ class InsertHistoryUseCase(
     private val historyRepository: HistoryRepository
 ) {
     suspend operator fun invoke(history: HistoryEntity) {
-        historyRepository.insertHistory(history)
+        historyRepository.insertNote(history)
     }
 }

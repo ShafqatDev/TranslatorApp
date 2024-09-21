@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.example.translatorapp.R
-import com.example.translatorapp.ui.theme.MainColor
+import com.example.translatorapp.ui.theme.BlueColor
 
 
 @Composable
@@ -33,7 +33,7 @@ fun TranslatorTabRow(selectedTab: Int, onClick: (Int) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = MainColor)
+            .background(color = BlueColor)
     ) {
         TabRow(
             selectedTab = selectedTab,
@@ -67,7 +67,7 @@ fun RowScope.TabRow(
     icon: ImageVector,
     tabIndex: Int,
     selectedColor: Color = colorResource(id = R.color.white),
-    unselectedColor: Color = MainColor
+    unselectedColor: Color = BlueColor
 ) {
     Column(
         modifier = Modifier

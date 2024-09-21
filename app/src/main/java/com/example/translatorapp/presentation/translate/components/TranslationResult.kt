@@ -1,8 +1,7 @@
 package com.example.translatorapp.presentation.translate.components
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,13 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -33,63 +34,77 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun TranslationResult(
-    onListenClick:()->Unit={},
+    onListenClick: () -> Unit = {},
     toLanguage: String = "Spanish",
     responseText: String = "",
     onShareClick: () -> Unit = {},
-    onFavClick: () -> Unit = {},
-    onCopyClick: () -> Unit = {},
+    onCopyClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(12.dp))
             .fillMaxWidth()
-            .height(180.dp)
-            .background(color = Color(0xFFF5F5F5), shape = RoundedCornerShape(8.dp)),
-        elevation = CardDefaults.cardElevation(4.dp)
+            .height(150.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = toLanguage, color = Color.Blue, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                        contentDescription = "Listen",
-                        modifier = Modifier.clickable {
-                            onListenClick.invoke()
-                        }
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = responseText, fontSize = 18.sp)
-            }
             Row(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = toLanguage,
+                    color = Color(0xFF007BFF),
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                    contentDescription = "Listen",
+                    tint = Color(0xFF007BFF),
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { onListenClick() }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = responseText,
+                fontSize = 18.sp,
+                color = Color(0xFF333333),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onShareClick) {
-                    Icon(imageVector = Icons.Default.Share, contentDescription = "Share")
-                }
-                IconButton(onClick = onFavClick) {
-                    Icon(imageVector = Icons.Default.Star, contentDescription = "Favorite")
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share",
+                        tint = Color(0xFFFFA000)
+                    )
                 }
                 IconButton(onClick = onCopyClick) {
-                    Icon(imageVector = Icons.Default.ContentCopy, contentDescription = "Copy")
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = "Copy",
+                        tint = Color(0xFF007BFF)
+                    )
                 }
             }
         }

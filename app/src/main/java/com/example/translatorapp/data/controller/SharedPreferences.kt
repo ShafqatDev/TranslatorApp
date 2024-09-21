@@ -9,6 +9,13 @@ class SharedPreferences(
     private val sharedPref = context.getSharedPreferences("language_prefs", Context.MODE_PRIVATE)
     private val editor = sharedPref.edit()
 
+    fun isFirstTimeLaunch(): Boolean {
+        return sharedPref.getBoolean("is_first_time_launch", true)
+    }
+
+    fun setFirstTimeLaunch(isFirstTime: Boolean) {
+        sharedPref.edit().putBoolean("is_first_time_launch", isFirstTime).apply()
+    }
     fun saveFromLanguage(fromLanguage: String) {
         editor.putString("from_language", fromLanguage).apply()
     }

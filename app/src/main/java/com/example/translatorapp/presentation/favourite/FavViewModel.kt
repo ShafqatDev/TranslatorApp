@@ -1,4 +1,4 @@
-package com.example.translatorapp.presentation.history
+package com.example.translatorapp.presentation.favourite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,33 +10,33 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class HistoryState(
-    val history: List<HistoryEntity> = emptyList()
+data class FavState(
+    val favHistory: List<HistoryEntity> = emptyList()
 )
 
-class HistoryViewModel(
+class FavViewModel(
     private val getHistoryUseCase: GetHistoryUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(HistoryState())
+    private val _state = MutableStateFlow(FavState())
     val state = _state.asStateFlow()
 
     init {
-        getNotes()
+        getFavorites()
     }
 
-    private fun getNotes() {
+    private fun getFavorites() {
         viewModelScope.launch {
             getHistoryUseCase().collect { notes ->
-                _state.update { it.copy(history = notes) }
+                _state.update { currentState -> currentState.copy(favHistory = notes.filter { it.isFavorite }) }
             }
         }
     }
 
     fun toggleFavorite(id: Long) {
         viewModelScope.launch {
-            toggleFavoriteUseCase.invoke(id)
+            toggleFavoriteUseCase(id)
         }
     }
 }

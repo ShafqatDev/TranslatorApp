@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -26,6 +28,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -44,16 +49,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.translatorapp.data.data_source.model.getLanguageNameByShortCode
-import com.example.translatorapp.presentation.components.LocalNavController
-import com.example.translatorapp.presentation.components.Swap
 import com.example.translatorapp.core.constants.LocalData.speak
 import com.example.translatorapp.core.constants.LocalData.startSpeechRecognition
+import com.example.translatorapp.data.data_source.model.getLanguageNameByShortCode
+import com.example.translatorapp.data.response.NetworkResponse
+import com.example.translatorapp.presentation.components.LocalNavController
+import com.example.translatorapp.presentation.components.Swap
 import com.example.translatorapp.presentation.navigation.components.Screens
+import com.example.translatorapp.presentation.talking_translator.components.TranslationCard
+import com.example.translatorapp.ui.theme.MainColor
 import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
 
@@ -64,14 +73,16 @@ fun LanguageChat() {
     val navController = LocalNavController.current
     val lifecycle = LocalLifecycleOwner.current
     val context = LocalContext.current
-    var tts by remember {
-        mutableStateOf<TextToSpeech?>(null)
-    }
+    var tts by remember { mutableStateOf<TextToSpeech?>(null) }
+
+    // Lifecycle Effect
     LaunchedEffect(key1 = lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.updateLanguages()
         }
     }
+
+    // TextToSpeech Initialization
     LaunchedEffect(context) {
         tts = TextToSpeech(context, TextToSpeech.OnInitListener { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -92,39 +103,72 @@ fun LanguageChat() {
             val speechText =
                 result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0) ?: ""
             if (speechText.isNotBlank()) {
-                viewModel.onMicButtonClick(isLeft = true, spokenText = speechText)
+                viewModel.onMicButtonClick(spokenText = speechText)
             }
         }
     }
+
     Scaffold(floatingActionButton = {
-        FloatingActionButton(
-            modifier = Modifier.padding(bottom = 80.dp),
-            onClick = {
-                startSpeechRecognition(startForResult)
-            }, shape = CircleShape, containerColor = Color(0xFF4FAAFF)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(start = 16.dp, bottom = 80.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Icon(imageVector = Icons.Default.Mic, contentDescription = "English")
+            // Left Mic Button
+            FloatingActionButton(
+                onClick = {
+                    viewModel.onSideChange(true)
+                    startSpeechRecognition(startForResult)
+                }, shape = CircleShape, containerColor = Color(0xFF4FAAFF)
+            ) {
+                Icon(imageVector = Icons.Default.Mic, contentDescription = "Left side Mic")
+            }
+            FloatingActionButton(
+                onClick = {
+                    viewModel.onSideChange(false)
+                    startSpeechRecognition(startForResult)
+                }, shape = CircleShape, containerColor = Color(0xFF388E3C)
+            ) {
+                Icon(imageVector = Icons.Default.Mic, contentDescription = "Right side Mic")
+            }
         }
     }) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color(0xFFEEF7FE))
+                .background(MainColor)
                 .padding(16.dp)
         ) {
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+            ) {
                 items(messages.messages) { messageData ->
-                    MessageBubble(message = messageData.message,
-                        translation = messageData.translation,
+                    TranslationCard(
+                        originalText = messageData.message,
+                        translatedText = messageData.translation,
                         isLeft = messageData.isLeft,
-                        onVolumeClick = {
+                        onClickSpeaker = {
                             speak(tts, messageData.translation)
-                        })
+                        },
+                        modifier = Modifier
+                            .align(if (messageData.isLeft) Alignment.BottomStart else Alignment.BottomEnd)
+                            .padding(
+                                end = if (messageData.isLeft) 16.dp else 0.dp,
+                                start = if (messageData.isLeft) 0.dp else 16.dp
+                            )
+                    )
+                }
+                if (messages.loading) {
+                    item {
+                        CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                    }
                 }
             }
-            Swap(
-                modifier = Modifier.align(Alignment.BottomCenter),
+            Swap(modifier = Modifier.align(Alignment.BottomCenter),
                 fromLanguage = messages.fromLanguage.getLanguageNameByShortCode(),
                 fromLanguageClick = {
                     navController.navigate(Screens.LanguageScreen.name + "/true")
@@ -135,80 +179,7 @@ fun LanguageChat() {
                 },
                 onSwapClick = {
                     viewModel.onSwapClick()
-                }
-            )
+                })
         }
     }
 }
-
-@Composable
-fun MessageBubble(
-    message: String, translation: String, isLeft: Boolean, onVolumeClick: () -> Unit = {}
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = if (isLeft) Arrangement.Start else Arrangement.End
-    ) {
-        if (isLeft) {
-            Icon(
-                imageVector = Icons.Default.Language,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(24.dp)
-                    .align(Alignment.Bottom),
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .widthIn(max = 250.dp)
-                .background(
-                    color = if (isLeft) Color.White else Color(0xFF4FAAFF),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .padding(12.dp)
-        ) {
-            Text(
-                text = message,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                color = if (isLeft) Color.Black else Color.White
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = translation,
-                    fontSize = 12.sp,
-                    color = if (isLeft) Color.Gray else Color.White,
-                    modifier = Modifier.weight(1f)
-                )
-                Icon(imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                    contentDescription = "Play Translation",
-                    tint = if (isLeft) Color.Gray else Color.White,
-                    modifier = Modifier
-                        .size(18.dp)
-                        .clickable {
-                            onVolumeClick.invoke()
-                        })
-            }
-        }
-
-        if (!isLeft) {
-            Icon(
-                imageVector = Icons.Default.Language,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .size(24.dp)
-                    .align(Alignment.Bottom),
-            )
-        }
-    }
-}
-
-

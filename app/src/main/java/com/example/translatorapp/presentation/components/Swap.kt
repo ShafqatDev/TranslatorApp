@@ -1,20 +1,12 @@
 package com.example.translatorapp.presentation.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,60 +18,58 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.translatorapp.R
+import androidx.compose.ui.unit.sp
 
 @Preview(showBackground = true)
 @Composable
 fun Swap(
     fromLanguage: String = "English",
-    fromFlag: Int = R.drawable.fblogo,
     fromLanguageClick: () -> Unit = {},
     toLanguage: String = "Spanish",
     toLanguageClick: () -> Unit = {},
     onSwapClick: () -> Unit = {},
-    toFlag: Int = R.drawable.fblogo,
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
 ) {
     Card(
         shape = RoundedCornerShape(35.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        modifier = modifier
-            .wrapContentSize(),
+        modifier = modifier.fillMaxWidth(0.99f),
         colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
         Row(
-            modifier = Modifier
-                .wrapContentSize(),
+            modifier = Modifier.fillMaxWidth(0.99f),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(
                 onClick = { fromLanguageClick.invoke() },
-                colors = ButtonDefaults.buttonColors(Color.Transparent, contentColor = Color.Black)
+                colors = ButtonDefaults.buttonColors(Color.Transparent, contentColor = Color.Black),
+                modifier = Modifier.weight(1f)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = fromFlag),
-                        contentDescription = "Flag",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(35.dp)
-                            .clip(CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(
-                        text = fromLanguage, fontWeight = FontWeight.SemiBold
+                        text = fromLanguage,
+                        maxLines = 2,
+                        minLines = 1,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = if (fromLanguage.length > 10) 10.sp else 12.sp
                     )
                 }
             }
-            IconButton(onClick = { onSwapClick.invoke() }) {
+            IconButton(
+                onClick = { onSwapClick.invoke() },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+            ) {
                 Icon(
                     imageVector = Icons.Default.SwapHoriz,
                     contentDescription = "Swap Language",
@@ -89,20 +79,18 @@ fun Swap(
             }
             Button(
                 onClick = { toLanguageClick.invoke() },
-                colors = ButtonDefaults.buttonColors(Color.Transparent, contentColor = Color.Black)
+                colors = ButtonDefaults.buttonColors(Color.Transparent, contentColor = Color.Black),
+                modifier = Modifier.weight(1f)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(
-                        text = toLanguage, fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Image(
-                        painter = painterResource(id = toFlag),
-                        contentDescription = "Flag",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(35.dp)
-                            .clip(CircleShape)
+                        text = toLanguage,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = if (toLanguage.length > 10) 10.sp else 12.sp
                     )
                 }
             }
